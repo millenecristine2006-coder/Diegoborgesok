@@ -223,9 +223,6 @@ const SISTEMA_HTML = `<div class="app">
   </div>
 </div>
 <script>
-(function() {
-'use strict';
-
 // ------------------------------------------------
 // CONSTANTES
 // ------------------------------------------------
@@ -1540,13 +1537,9 @@ document.getElementById("modalOv").addEventListener("click", function(e){if(e.ta
 // ------------------------------------------------
 document.getElementById("authScreen").style.display = "flex";
 
-})(); // end IIFE
 </script>`
 
-const SISTEMA_JS = `(function() {
-'use strict';
-
-// ------------------------------------------------
+const SISTEMA_JS = `// ------------------------------------------------
 // CONSTANTES
 // ------------------------------------------------
 var SFUNIL = ["Contato Inicial","Agendar primeira reuniao","Reuniao 1 agendada","Aguardando retorno","Proposta enviada","Cliente analisando","Reuniao final","Confirmado","Contrato em criacao","Contrato em assinatura","Contrato assinado","Evento concluido","Adiado"];
@@ -2858,9 +2851,7 @@ document.getElementById("modalOv").addEventListener("click", function(e){if(e.ta
 // ------------------------------------------------
 // INIT — show login screen, wait for login
 // ------------------------------------------------
-document.getElementById("authScreen").style.display = "flex";
-
-})(); // end IIFE`
+document.getElementById("authScreen").style.display = "flex";`
 
 export default function DashboardClient({ user }: Props) {
   const router = useRouter()
@@ -2871,30 +2862,38 @@ export default function DashboardClient({ user }: Props) {
     if (mounted.current) return
     mounted.current = true
 
+    // Inject CSS
     const style = document.createElement('style')
     style.textContent = SISTEMA_CSS
     document.head.appendChild(style)
 
+    // Inject HTML
     document.body.innerHTML = SISTEMA_HTML
 
+    // Expose logout to window
     ;(window as any).__supabaseLogout = async () => {
       await supabase.auth.signOut()
       router.push('/login')
     }
 
+    // Inject JS — now global scope, no IIFE
     const script = document.createElement('script')
     script.textContent = SISTEMA_JS
     document.body.appendChild(script)
 
+    // Auto-login after JS runs
     setTimeout(() => {
       try {
         const w = window as any
 
+        // Override logout
         w.doLogout = async () => {
           await w.__supabaseLogout()
         }
 
         const role = user.role || 'viewer'
+
+        // Find matching user in system by role
         const matchedUser = (w.users || []).find((u: any) => u.role === role)
 
         if (matchedUser) {
@@ -2908,18 +2907,24 @@ export default function DashboardClient({ user }: Props) {
             role: role,
             ativo: true,
           }
-          if (w.users) w.users.push(w.currentUser)
+          if (Array.isArray(w.users)) w.users.push(w.currentUser)
         }
 
+        // Hide auth screen
         const authScreen = document.getElementById('authScreen')
         if (authScreen) authScreen.style.display = 'none'
 
-        if (typeof w.renderAll === 'function') w.renderAll()
+        // Render system
+        if (typeof w.renderAll === 'function') {
+          w.renderAll()
+        }
+
       } catch (e) {
         console.error('Sistema init error:', e)
       }
-    }, 100)
+    }, 150)
 
+    // Auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') router.push('/login')
     })
