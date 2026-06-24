@@ -2893,21 +2893,14 @@ export default function DashboardClient({ user }: Props) {
 
         const role = user.role || 'viewer'
 
-        // Find matching user in system by role
-        const matchedUser = (w.users || []).find((u: any) => u.role === role)
-
-        if (matchedUser) {
-          w.currentUser = { ...matchedUser, nome: user.nome, id: user.id }
-        } else {
-          w.currentUser = {
-            id: user.id,
-            nome: user.nome,
-            usuario: user.email,
-            senha: '',
-            role: role,
-            ativo: true,
-          }
-          if (Array.isArray(w.users)) w.users.push(w.currentUser)
+        // Always set currentUser directly from Supabase — ignore hardcoded users
+        w.currentUser = {
+          id: user.id,
+          nome: user.nome,
+          usuario: user.email,
+          senha: '',
+          role: role,
+          ativo: true,
         }
 
         // Hide auth screen
