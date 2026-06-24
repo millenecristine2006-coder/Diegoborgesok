@@ -394,29 +394,26 @@ function autoF(label,val,cls) { return '<div class="fg"><span class="lb">'+esc(l
 // DADOS
 // ------------------------------------------------
 var ev = [
-  {id:uid(),data:"2026-07-15",tipo:"Imersao",qtdVendida:180,cidade:"Sao Paulo",empresa:"Tech Summit BR",responsavel:"Ana Lima",funcao:"Produtor",contato:"(11) 99999-1111",status:"Confirmado",prioridade:"Alta",ultimoContato:"2026-06-10",proximaAcao:"Confirmar logistica",prazoAcao:"2026-06-20",obs:"Evento principal do semestre",linkRelacionado:"",valorContrato:15000,entrada:5000,statusContrato:"Contrato assinado",fechamentoCom:"Diego",vagasReservadas:true,custos:{viagem:800,imersao:1200,espaco:0,outros:200,extras:[{nome:"Camisetas",valor:500}]},obs_c:"",link_c:"",fu:[{id:uid(),data:"2026-06-10",tipo:"WhatsApp",contato:"Ana Lima",resumo:"Contrato assinado. Entrada via PIX confirmada.",status:"Realizado",prox:"Confirmar logistica",prazo:"2026-06-20"}],ck:{items:[{nome:"Som e Imagem",status:"Concluido",tipo:"Espaco"},{nome:"Receptivo",status:"Em andamento",tipo:"Contratacao"},{nome:"Credencial",status:"Concluido",tipo:""},{nome:"Pasta",status:"Em andamento",tipo:""},{nome:"Agua",status:"Pendente",tipo:""}],uber:"Pago",hosp:"Parceria",alim:"Pago",obs:"Confirmar equipe tecnica"},audit:[{ts:"10/06/2026 14:22",campo:"Status",de:"Contrato em assinatura",para:"Contrato assinado"}]},
-  {id:uid(),data:"2026-08-05",tipo:"Palestra",qtdVendida:250,cidade:"Campinas",empresa:"Inova Negocios",responsavel:"Carlos Mendes",funcao:"Marketing",contato:"(19) 98888-2222",status:"Proposta enviada",prioridade:"Media",ultimoContato:"2026-06-08",proximaAcao:"Cobrar retorno da proposta",prazoAcao:"2026-06-17",obs:"",linkRelacionado:"",valorContrato:8000,entrada:0,statusContrato:"Aguardando assinatura",fechamentoCom:"Producao",vagasReservadas:false,custos:{viagem:400,imersao:0,espaco:0,outros:0,extras:[]},obs_c:"",link_c:"",fu:[{id:uid(),data:"2026-06-08",tipo:"WhatsApp",contato:"Carlos Mendes",resumo:"Cobrei retorno. Vai analisar com a diretoria.",status:"Aguardando resposta",prox:"Cobrar retorno",prazo:"2026-06-17"}],ck:{items:[{nome:"Som e Imagem",status:"Pendente",tipo:""},{nome:"Receptivo",status:"Nao se aplica",tipo:""}],uber:"",hosp:"",alim:"",obs:""},audit:[]},
-  {id:uid(),data:"2026-09-20",tipo:"Evento Fechado",qtdVendida:0,cidade:"Rio de Janeiro",empresa:"Construtora Silva",responsavel:"Mariana Costa",funcao:"Dono",contato:"(21) 97777-3333",status:"Contrato assinado",prioridade:"Alta",ultimoContato:"2026-06-12",proximaAcao:"Preparar apresentacao",prazoAcao:"2026-07-01",obs:"Evento corporativo fechado",linkRelacionado:"",valorContrato:20000,entrada:10000,statusContrato:"Assinado",fechamentoCom:"Diego",vagasReservadas:false,custos:{viagem:1500,imersao:0,espaco:2000,outros:300,extras:[{nome:"Decoracao",valor:800}]},obs_c:"",link_c:"",fu:[{id:uid(),data:"2026-06-12",tipo:"WhatsApp",contato:"Mariana Costa",resumo:"Contrato assinado. Entrada via PIX confirmada.",status:"Realizado",prox:"Preparar apresentacao",prazo:"2026-07-01"}],ck:{items:[{nome:"Som e Imagem",status:"Em andamento",tipo:"Contratacao"},{nome:"Receptivo",status:"Pendente",tipo:"Contratacao"}],uber:"Parceria",hosp:"Pago",alim:"",obs:""},audit:[{ts:"12/06/2026 11:30",campo:"Status",de:"Confirmado",para:"Contrato assinado"}]}
 ];
+
 var leads = [
-  {id:uid(),nome:"Rodrigo Alves",empresa:"MegaFit Academia",cidade:"Belo Horizonte",contato:"(31) 98765-4321",tipo:"Palestra",interesse:"Palestra motivacional para lideres",status:"Em conversa",prioridade:"Alta",proximaAcao:"Enviar proposta",prazoAcao:"2026-06-20",obs:"",criadoEm:today(),audit:[]},
-  {id:uid(),nome:"Fernanda Souza",empresa:"Instituto Lideranca",cidade:"Curitiba",contato:"(41) 91234-5678",tipo:"Imersao",interesse:"Imersao de 2 dias para lideres",status:"Proposta enviada",prioridade:"Alta",proximaAcao:"Cobrar retorno",prazoAcao:"2026-06-18",obs:"",criadoEm:today(),audit:[]},
-  {id:uid(),nome:"Paulo Henrique",empresa:"Startup Vale",cidade:"Sao Paulo",contato:"(11) 97654-3210",tipo:"Workshop",interesse:"Workshop de inovacao",status:"Novo Lead",prioridade:"Media",proximaAcao:"Primeiro contato",prazoAcao:"",obs:"Instagram",criadoEm:today(),audit:[]}
 ];
+
 
 // ------------------------------------------------
 // AGENDA / LOGISTICA
 // ------------------------------------------------
 var logistica = [
-  {id:uid(),eventoId:"",tipo:"voo",data:"2026-07-14",descricao:"GOL 1234 - GRU -> CGH",horario:"06:30",valor:580,status:"Confirmado",obs:"Janela"},
-  {id:uid(),eventoId:"",tipo:"hotel",data:"2026-07-14",dataFim:"2026-07-16",descricao:"Hotel Ibis SP Centro",horario:"check-in 14:00",valor:320,status:"Confirmado",obs:"Cafe da manha incluso"}
 ];
+
 var calMes = new Date().getMonth();
 var calAno = new Date().getFullYear();
 var calSelDia = null;
 
-var par = [{id:uid(),nome:"Joao Producoes",empresa:"JP Eventos",cidade:"Sao Paulo",tipo:"Producao",contato:"(11)99000-1234",eventoRel:"Tech Summit BR",status:"Confirmado",obs:"Parceiro fixo"}];
-var lnk = [{id:uid(),categoria:"Redes Sociais",nome:"Instagram Diego Borges",link:"https://www.instagram.com/diegoborgesdie/",responsavel:"-",eventoRel:"Geral",obs:"Perfil oficial"}];
+var par = [];
+
+var lnk = [];
+
 
 // ------------------------------------------------
 // STATE
@@ -1717,29 +1714,26 @@ function autoF(label,val,cls) { return '<div class="fg"><span class="lb">'+esc(l
 // DADOS
 // ------------------------------------------------
 var ev = [
-  {id:uid(),data:"2026-07-15",tipo:"Imersao",qtdVendida:180,cidade:"Sao Paulo",empresa:"Tech Summit BR",responsavel:"Ana Lima",funcao:"Produtor",contato:"(11) 99999-1111",status:"Confirmado",prioridade:"Alta",ultimoContato:"2026-06-10",proximaAcao:"Confirmar logistica",prazoAcao:"2026-06-20",obs:"Evento principal do semestre",linkRelacionado:"",valorContrato:15000,entrada:5000,statusContrato:"Contrato assinado",fechamentoCom:"Diego",vagasReservadas:true,custos:{viagem:800,imersao:1200,espaco:0,outros:200,extras:[{nome:"Camisetas",valor:500}]},obs_c:"",link_c:"",fu:[{id:uid(),data:"2026-06-10",tipo:"WhatsApp",contato:"Ana Lima",resumo:"Contrato assinado. Entrada via PIX confirmada.",status:"Realizado",prox:"Confirmar logistica",prazo:"2026-06-20"}],ck:{items:[{nome:"Som e Imagem",status:"Concluido",tipo:"Espaco"},{nome:"Receptivo",status:"Em andamento",tipo:"Contratacao"},{nome:"Credencial",status:"Concluido",tipo:""},{nome:"Pasta",status:"Em andamento",tipo:""},{nome:"Agua",status:"Pendente",tipo:""}],uber:"Pago",hosp:"Parceria",alim:"Pago",obs:"Confirmar equipe tecnica"},audit:[{ts:"10/06/2026 14:22",campo:"Status",de:"Contrato em assinatura",para:"Contrato assinado"}]},
-  {id:uid(),data:"2026-08-05",tipo:"Palestra",qtdVendida:250,cidade:"Campinas",empresa:"Inova Negocios",responsavel:"Carlos Mendes",funcao:"Marketing",contato:"(19) 98888-2222",status:"Proposta enviada",prioridade:"Media",ultimoContato:"2026-06-08",proximaAcao:"Cobrar retorno da proposta",prazoAcao:"2026-06-17",obs:"",linkRelacionado:"",valorContrato:8000,entrada:0,statusContrato:"Aguardando assinatura",fechamentoCom:"Producao",vagasReservadas:false,custos:{viagem:400,imersao:0,espaco:0,outros:0,extras:[]},obs_c:"",link_c:"",fu:[{id:uid(),data:"2026-06-08",tipo:"WhatsApp",contato:"Carlos Mendes",resumo:"Cobrei retorno. Vai analisar com a diretoria.",status:"Aguardando resposta",prox:"Cobrar retorno",prazo:"2026-06-17"}],ck:{items:[{nome:"Som e Imagem",status:"Pendente",tipo:""},{nome:"Receptivo",status:"Nao se aplica",tipo:""}],uber:"",hosp:"",alim:"",obs:""},audit:[]},
-  {id:uid(),data:"2026-09-20",tipo:"Evento Fechado",qtdVendida:0,cidade:"Rio de Janeiro",empresa:"Construtora Silva",responsavel:"Mariana Costa",funcao:"Dono",contato:"(21) 97777-3333",status:"Contrato assinado",prioridade:"Alta",ultimoContato:"2026-06-12",proximaAcao:"Preparar apresentacao",prazoAcao:"2026-07-01",obs:"Evento corporativo fechado",linkRelacionado:"",valorContrato:20000,entrada:10000,statusContrato:"Assinado",fechamentoCom:"Diego",vagasReservadas:false,custos:{viagem:1500,imersao:0,espaco:2000,outros:300,extras:[{nome:"Decoracao",valor:800}]},obs_c:"",link_c:"",fu:[{id:uid(),data:"2026-06-12",tipo:"WhatsApp",contato:"Mariana Costa",resumo:"Contrato assinado. Entrada via PIX confirmada.",status:"Realizado",prox:"Preparar apresentacao",prazo:"2026-07-01"}],ck:{items:[{nome:"Som e Imagem",status:"Em andamento",tipo:"Contratacao"},{nome:"Receptivo",status:"Pendente",tipo:"Contratacao"}],uber:"Parceria",hosp:"Pago",alim:"",obs:""},audit:[{ts:"12/06/2026 11:30",campo:"Status",de:"Confirmado",para:"Contrato assinado"}]}
 ];
+
 var leads = [
-  {id:uid(),nome:"Rodrigo Alves",empresa:"MegaFit Academia",cidade:"Belo Horizonte",contato:"(31) 98765-4321",tipo:"Palestra",interesse:"Palestra motivacional para lideres",status:"Em conversa",prioridade:"Alta",proximaAcao:"Enviar proposta",prazoAcao:"2026-06-20",obs:"",criadoEm:today(),audit:[]},
-  {id:uid(),nome:"Fernanda Souza",empresa:"Instituto Lideranca",cidade:"Curitiba",contato:"(41) 91234-5678",tipo:"Imersao",interesse:"Imersao de 2 dias para lideres",status:"Proposta enviada",prioridade:"Alta",proximaAcao:"Cobrar retorno",prazoAcao:"2026-06-18",obs:"",criadoEm:today(),audit:[]},
-  {id:uid(),nome:"Paulo Henrique",empresa:"Startup Vale",cidade:"Sao Paulo",contato:"(11) 97654-3210",tipo:"Workshop",interesse:"Workshop de inovacao",status:"Novo Lead",prioridade:"Media",proximaAcao:"Primeiro contato",prazoAcao:"",obs:"Instagram",criadoEm:today(),audit:[]}
 ];
+
 
 // ------------------------------------------------
 // AGENDA / LOGISTICA
 // ------------------------------------------------
 var logistica = [
-  {id:uid(),eventoId:"",tipo:"voo",data:"2026-07-14",descricao:"GOL 1234 - GRU -> CGH",horario:"06:30",valor:580,status:"Confirmado",obs:"Janela"},
-  {id:uid(),eventoId:"",tipo:"hotel",data:"2026-07-14",dataFim:"2026-07-16",descricao:"Hotel Ibis SP Centro",horario:"check-in 14:00",valor:320,status:"Confirmado",obs:"Cafe da manha incluso"}
 ];
+
 var calMes = new Date().getMonth();
 var calAno = new Date().getFullYear();
 var calSelDia = null;
 
-var par = [{id:uid(),nome:"Joao Producoes",empresa:"JP Eventos",cidade:"Sao Paulo",tipo:"Producao",contato:"(11)99000-1234",eventoRel:"Tech Summit BR",status:"Confirmado",obs:"Parceiro fixo"}];
-var lnk = [{id:uid(),categoria:"Redes Sociais",nome:"Instagram Diego Borges",link:"https://www.instagram.com/diegoborgesdie/",responsavel:"-",eventoRel:"Geral",obs:"Perfil oficial"}];
+var par = [];
+
+var lnk = [];
+
 
 // ------------------------------------------------
 // STATE
@@ -2877,29 +2871,55 @@ export default function DashboardClient({ user }: Props) {
     if (mounted.current) return
     mounted.current = true
 
-    // 1. Inject CSS
     const style = document.createElement('style')
     style.textContent = SISTEMA_CSS
     document.head.appendChild(style)
 
-    // 2. Inject body HTML
     document.body.innerHTML = SISTEMA_HTML
 
-    // 3. Expose Supabase user to the system
-    ;(window as any).__supabaseUser = user
-
-    // 4. Override doLogout to use Supabase
     ;(window as any).__supabaseLogout = async () => {
       await supabase.auth.signOut()
       router.push('/login')
     }
 
-    // 5. Inject and run the system JS
     const script = document.createElement('script')
-    script.textContent = SISTEMA_JS + '\n' + overrideLogout()
+    script.textContent = SISTEMA_JS
     document.body.appendChild(script)
 
-    // 6. Listen for auth changes
+    setTimeout(() => {
+      try {
+        const w = window as any
+
+        w.doLogout = async () => {
+          await w.__supabaseLogout()
+        }
+
+        const role = user.role || 'viewer'
+        const matchedUser = (w.users || []).find((u: any) => u.role === role)
+
+        if (matchedUser) {
+          w.currentUser = { ...matchedUser, nome: user.nome, id: user.id }
+        } else {
+          w.currentUser = {
+            id: user.id,
+            nome: user.nome,
+            usuario: user.email,
+            senha: '',
+            role: role,
+            ativo: true,
+          }
+          if (w.users) w.users.push(w.currentUser)
+        }
+
+        const authScreen = document.getElementById('authScreen')
+        if (authScreen) authScreen.style.display = 'none'
+
+        if (typeof w.renderAll === 'function') w.renderAll()
+      } catch (e) {
+        console.error('Sistema init error:', e)
+      }
+    }, 100)
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') router.push('/login')
     })
@@ -2910,36 +2930,5 @@ export default function DashboardClient({ user }: Props) {
     }
   }, [])
 
-  function overrideLogout() {
-    return `
-      // Override doLogout to use Supabase
-      if (typeof window.__supabaseLogout === 'function') {
-        var _origLogout = window.doLogout;
-        window.doLogout = function() {
-          window.__supabaseLogout();
-        };
-      }
-      // Pre-fill current user info
-      var __u = window.__supabaseUser;
-      if (__u && typeof users !== 'undefined') {
-        // Inject the logged-in user into the system
-        for (var i=0; i<users.length; i++) {
-          if (users[i].role === __u.role) {
-            currentUser = users[i];
-            currentUser.nome = __u.nome;
-            break;
-          }
-        }
-        if (!currentUser) {
-          currentUser = {id:__u.id, nome:__u.nome, usuario:__u.email, senha:'', role:__u.role, ativo:true};
-          users.push(currentUser);
-        }
-        document.getElementById('authScreen').style.display = 'none';
-        renderAll();
-      }
-    `
-  }
-
-  // Return empty — body is replaced by useEffect
   return <div id="sistema-root" />
 }
