@@ -2853,6 +2853,342 @@ document.getElementById("modalOv").addEventListener("click", function(e){if(e.ta
 // ------------------------------------------------
 document.getElementById("authScreen").style.display = "flex";`
 
+const SUPABASE_INTEGRATION = `
+// ============================================================
+// SUPABASE INTEGRATION
+// Wraps all save/delete functions to sync with Supabase
+// ============================================================
+(function() {
+
+  // Wait for __sb to be available
+  function waitForSb(cb, tries) {
+    tries = tries || 0;
+    if (tries > 20) return;
+    if (window.__sb) { cb(); return; }
+    setTimeout(function() { waitForSb(cb, tries + 1); }, 200);
+  }
+
+  // Helper: map JS object keys to snake_case for Supabase
+  function evToDb(e) {
+    return {
+      id: e.id,
+      data: e.data || null,
+      tipo: e.tipo || null,
+      qtd_vendida: e.qtdVendida || 0,
+      cidade: e.cidade || null,
+      empresa: e.empresa || null,
+      responsavel: e.responsavel || null,
+      funcao: e.funcao || null,
+      contato: e.contato || null,
+      status: e.status || null,
+      prioridade: e.prioridade || null,
+      ultimo_contato: e.ultimoContato || null,
+      proxima_acao: e.proximaAcao || null,
+      prazo_acao: e.prazoAcao || null,
+      obs: e.obs || null,
+      link_relacionado: e.linkRelacionado || null,
+      valor_contrato: parseFloat(e.valorContrato) || 0,
+      entrada: parseFloat(e.entrada) || 0,
+      status_contrato: e.statusContrato || null,
+      fechamento_com: e.fechamentoCom || null,
+      vagas_reservadas: e.vagasReservadas || false,
+      custos: e.custos || {},
+      obs_c: e.obs_c || null,
+      link_c: e.link_c || null,
+      fu: e.fu || [],
+      ck: e.ck || {},
+      audit: e.audit || []
+    };
+  }
+
+  function leadToDb(l) {
+    return {
+      id: l.id,
+      nome: l.nome || null,
+      empresa: l.empresa || null,
+      cidade: l.cidade || null,
+      contato: l.contato || null,
+      tipo: l.tipo || null,
+      interesse: l.interesse || null,
+      status: l.status || null,
+      prioridade: l.prioridade || null,
+      proxima_acao: l.proximaAcao || null,
+      prazo_acao: l.prazoAcao || null,
+      obs: l.obs || null,
+      audit: l.audit || []
+    };
+  }
+
+  function parcToDb(p) {
+    return {
+      id: p.id,
+      nome: p.nome || null,
+      empresa: p.empresa || null,
+      cidade: p.cidade || null,
+      tipo: p.tipo || null,
+      contato: p.contato || null,
+      evento_rel: p.eventoRel || null,
+      status: p.status || null,
+      obs: p.obs || null
+    };
+  }
+
+  function linkToDb(l) {
+    return {
+      id: l.id,
+      categoria: l.categoria || null,
+      nome: l.nome || null,
+      link: l.link || null,
+      responsavel: l.responsavel || null,
+      evento_rel: l.eventoRel || null,
+      obs: l.obs || null
+    };
+  }
+
+  function logToDb(l) {
+    return {
+      id: l.id,
+      evento_id: l.eventoId || null,
+      tipo: l.tipo || null,
+      data: l.data || null,
+      data_fim: l.dataFim || null,
+      descricao: l.descricao || null,
+      horario: l.horario || null,
+      valor: parseFloat(l.valor) || 0,
+      status: l.status || null,
+      obs: l.obs || null
+    };
+  }
+
+  function dbToEv(r) {
+    return {
+      id: r.id,
+      data: r.data || '',
+      tipo: r.tipo || '',
+      qtdVendida: r.qtd_vendida || 0,
+      cidade: r.cidade || '',
+      empresa: r.empresa || '',
+      responsavel: r.responsavel || '',
+      funcao: r.funcao || '',
+      contato: r.contato || '',
+      status: r.status || 'Contato Inicial',
+      prioridade: r.prioridade || 'Media',
+      ultimoContato: r.ultimo_contato || '',
+      proximaAcao: r.proxima_acao || '',
+      prazoAcao: r.prazo_acao || '',
+      obs: r.obs || '',
+      linkRelacionado: r.link_relacionado || '',
+      valorContrato: r.valor_contrato || 0,
+      entrada: r.entrada || 0,
+      statusContrato: r.status_contrato || '',
+      fechamentoCom: r.fechamento_com || '',
+      vagasReservadas: r.vagas_reservadas || false,
+      custos: r.custos || {viagem:0,imersao:0,espaco:0,outros:0,extras:[]},
+      obs_c: r.obs_c || '',
+      link_c: r.link_c || '',
+      fu: r.fu || [],
+      ck: r.ck || {items:[],uber:'',hosp:'',alim:'',obs:''},
+      audit: r.audit || []
+    };
+  }
+
+  function dbToLead(r) {
+    return {
+      id: r.id,
+      nome: r.nome || '',
+      empresa: r.empresa || '',
+      cidade: r.cidade || '',
+      contato: r.contato || '',
+      tipo: r.tipo || '',
+      interesse: r.interesse || '',
+      status: r.status || 'Novo Lead',
+      prioridade: r.prioridade || 'Media',
+      proximaAcao: r.proxima_acao || '',
+      prazoAcao: r.prazo_acao || '',
+      obs: r.obs || '',
+      criadoEm: r.created_at ? r.created_at.slice(0,10) : '',
+      audit: r.audit || []
+    };
+  }
+
+  function dbToParc(r) {
+    return {
+      id: r.id,
+      nome: r.nome || '',
+      empresa: r.empresa || '',
+      cidade: r.cidade || '',
+      tipo: r.tipo || '',
+      contato: r.contato || '',
+      eventoRel: r.evento_rel || '',
+      status: r.status || 'Em conversa',
+      obs: r.obs || ''
+    };
+  }
+
+  function dbToLink(r) {
+    return {
+      id: r.id,
+      categoria: r.categoria || '',
+      nome: r.nome || '',
+      link: r.link || '',
+      responsavel: r.responsavel || '',
+      eventoRel: r.evento_rel || '',
+      obs: r.obs || ''
+    };
+  }
+
+  function dbToLog(r) {
+    return {
+      id: r.id,
+      eventoId: r.evento_id || '',
+      tipo: r.tipo || 'outro',
+      data: r.data || '',
+      dataFim: r.data_fim || '',
+      descricao: r.descricao || '',
+      horario: r.horario || '',
+      valor: r.valor || 0,
+      status: r.status || 'Confirmado',
+      obs: r.obs || ''
+    };
+  }
+
+  // Load all data from Supabase on init
+  async function loadData() {
+    var sb = window.__sb;
+    if (!sb) return;
+    try {
+      var results = await Promise.all([
+        sb.from('eventos').select('*').order('data'),
+        sb.from('leads').select('*').order('created_at'),
+        sb.from('parceiros').select('*'),
+        sb.from('links').select('*'),
+        sb.from('logistica').select('*').order('data')
+      ]);
+
+      if (results[0].data) window.ev = results[0].data.map(dbToEv);
+      if (results[1].data) window.leads = results[1].data.map(dbToLead);
+      if (results[2].data) window.par = results[2].data.map(dbToParc);
+      if (results[3].data) window.lnk = results[3].data.map(dbToLink);
+      if (results[4].data) window.logistica = results[4].data.map(dbToLog);
+
+      if (typeof window.renderAll === 'function') window.renderAll();
+    } catch(e) {
+      console.error('Supabase load error:', e);
+    }
+  }
+
+  // Wrap save functions
+  waitForSb(function() {
+    var sb = window.__sb;
+
+    // EVENTOS
+    var _salvarEv = window.salvarEv;
+    window.salvarEv = function(eid, isNew) {
+      _salvarEv(eid, isNew);
+      // Find the saved event
+      setTimeout(function() {
+        var e = (window.ev || []).find(function(x) { return x.id === eid; });
+        if (e) sb.from('eventos').upsert(evToDb(e)).then(function(r) { if (r.error) console.error('Save ev:', r.error); });
+      }, 50);
+    };
+
+    var _delEv = window.delEv;
+    window.delEv = function(id) {
+      _delEv(id);
+      sb.from('eventos').delete().eq('id', id).then(function(r) { if (r.error) console.error('Del ev:', r.error); });
+    };
+
+    // LEADS
+    var _salvarLead = window.salvarLead;
+    window.salvarLead = function(lid, isNew) {
+      _salvarLead(lid, isNew);
+      setTimeout(function() {
+        var l = (window.leads || []).find(function(x) { return x.id === lid; });
+        if (l) sb.from('leads').upsert(leadToDb(l)).then(function(r) { if (r.error) console.error('Save lead:', r.error); });
+      }, 50);
+    };
+
+    var _delLead = window.delLead;
+    window.delLead = function(id) {
+      _delLead(id);
+      sb.from('leads').delete().eq('id', id).then(function(r) { if (r.error) console.error('Del lead:', r.error); });
+    };
+
+    // PARCEIROS
+    var _salvarParc = window.salvarParc;
+    window.salvarParc = function(pid, isNew) {
+      _salvarParc(pid, isNew);
+      setTimeout(function() {
+        var p = (window.par || []).find(function(x) { return x.id === pid; });
+        if (p) sb.from('parceiros').upsert(parcToDb(p)).then(function(r) { if (r.error) console.error('Save parc:', r.error); });
+      }, 50);
+    };
+
+    var _delParc = window.delParc;
+    window.delParc = function(id) {
+      _delParc(id);
+      sb.from('parceiros').delete().eq('id', id).then(function(r) { if (r.error) console.error('Del parc:', r.error); });
+    };
+
+    // LINKS
+    var _salvarLink = window.salvarLink;
+    window.salvarLink = function() {
+      _salvarLink();
+      setTimeout(function() {
+        var l = (window.lnk || []).slice(-1)[0];
+        if (l) sb.from('links').upsert(linkToDb(l)).then(function(r) { if (r.error) console.error('Save link:', r.error); });
+      }, 50);
+    };
+
+    var _delLink = window.delLink;
+    window.delLink = function(id) {
+      _delLink(id);
+      sb.from('links').delete().eq('id', id).then(function(r) { if (r.error) console.error('Del link:', r.error); });
+    };
+
+    // LOGISTICA
+    var _salvarLog = window.salvarLogistica;
+    window.salvarLogistica = function(lid, isNew) {
+      _salvarLog(lid, isNew);
+      setTimeout(function() {
+        var l = (window.logistica || []).find(function(x) { return x.id === lid; });
+        if (l) sb.from('logistica').upsert(logToDb(l)).then(function(r) { if (r.error) console.error('Save log:', r.error); });
+      }, 50);
+    };
+
+    var _delLog = window.delLogistica;
+    window.delLogistica = function(id) {
+      _delLog(id);
+      sb.from('logistica').delete().eq('id', id).then(function(r) { if (r.error) console.error('Del log:', r.error); });
+    };
+
+    // FOLLOW-UP (saved as part of evento)
+    var _salvarFU = window.salvarFU;
+    window.salvarFU = function(eid) {
+      _salvarFU(eid);
+      setTimeout(function() {
+        var e = (window.ev || []).find(function(x) { return x.id === eid; });
+        if (e) sb.from('eventos').upsert(evToDb(e)).then(function(r) { if (r.error) console.error('Save FU:', r.error); });
+      }, 50);
+    };
+
+    // CHECKLIST (saved as part of evento)
+    var _salvarCK = window.salvarCK;
+    window.salvarCK = function(eid) {
+      _salvarCK(eid);
+      setTimeout(function() {
+        var e = (window.ev || []).find(function(x) { return x.id === eid; });
+        if (e) sb.from('eventos').upsert(evToDb(e)).then(function(r) { if (r.error) console.error('Save CK:', r.error); });
+      }, 50);
+    };
+
+    // Load data from Supabase
+    loadData();
+  });
+
+})();
+`
+
 export default function DashboardClient({ user }: Props) {
   const router = useRouter()
   const supabase = createClient()
@@ -2870,30 +3206,30 @@ export default function DashboardClient({ user }: Props) {
     // Inject HTML
     document.body.innerHTML = SISTEMA_HTML
 
-    // Expose logout to window
+    // Expose Supabase client to window for integration script
+    ;(window as any).__sb = supabase
+
+    // Expose logout
     ;(window as any).__supabaseLogout = async () => {
       await supabase.auth.signOut()
       router.push('/login')
     }
 
-    // Inject JS — now global scope, no IIFE
+    // Inject system JS
     const script = document.createElement('script')
     script.textContent = SISTEMA_JS
     document.body.appendChild(script)
 
-    // Auto-login after JS runs
+    // Auto-login with Supabase user
     setTimeout(() => {
       try {
         const w = window as any
 
-        // Override logout
         w.doLogout = async () => {
           await w.__supabaseLogout()
         }
 
         const role = user.role || 'viewer'
-
-        // Always set currentUser directly from Supabase — ignore hardcoded users
         w.currentUser = {
           id: user.id,
           nome: user.nome,
@@ -2903,14 +3239,15 @@ export default function DashboardClient({ user }: Props) {
           ativo: true,
         }
 
-        // Hide auth screen
         const authScreen = document.getElementById('authScreen')
         if (authScreen) authScreen.style.display = 'none'
 
-        // Render system
-        if (typeof w.renderAll === 'function') {
-          w.renderAll()
-        }
+        if (typeof w.renderAll === 'function') w.renderAll()
+
+        // Inject Supabase integration (load data + wrap save functions)
+        const integrationScript = document.createElement('script')
+        integrationScript.textContent = SUPABASE_INTEGRATION
+        document.body.appendChild(integrationScript)
 
       } catch (e) {
         console.error('Sistema init error:', e)
